@@ -1,0 +1,37 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# 제목
+st.title("🌎 Peru vs 🇰🇷 South Korea INFP 비율 비교 💡")
+
+# CSV 불러오기
+df = pd.read_csv("countriesMBTI_16types.csv")
+
+# Peru와 South Korea 데이터 추출
+countries = ["Peru", "South Korea"]
+subset = df[df["Country"].isin(countries)][["Country", "INFP"]]
+
+# Plotly 막대 그래프 생성
+fig = px.bar(
+    subset,
+    x="Country",
+    y="INFP",
+    text="INFP",
+    color="Country",
+    color_discrete_sequence=px.colors.qualitative.Set2,
+    title="🌍 INFP 비율 비교"
+)
+
+# 그래프 꾸미기
+fig.update_traces(texttemplate="%{text:.2%}", textposition="outside")
+fig.update_layout(
+    xaxis_title="국가",
+    yaxis_title="INFP 비율",
+    title_x=0.5,
+    bargap=0.4,
+    plot_bgcolor="white"
+)
+
+# 출력
+st.plotly_chart(fig, use_container_width=True)
