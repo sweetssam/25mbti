@@ -3,35 +3,44 @@ import pandas as pd
 import plotly.express as px
 
 # 제목
-st.title("🌎 Peru vs 🇰🇷 South Korea INFP 비율 비교 💡")
+st.title("🌎 국가별 INFP 비율 비교 대시보드 💡")
 
 # CSV 불러오기
 df = pd.read_csv("countriesMBTI_16types.csv")
 
-# Peru와 South Korea 데이터 추출
-countries = ["Peru", "South Korea"]
-subset = df[df["Country"].isin(countries)][["Country", "INFP"]]
-
-# Plotly 막대 그래프 생성
-fig = px.bar(
-    subset,
-    x="Country",
-    y="INFP",
-    text="INFP",
-    color="Country",
-    color_discrete_sequence=px.colors.qualitative.Set2,
-    title="🌍 INFP 비율 비교"
+# 드롭다운에서 나라 선택 (2개)
+countries = st.multiselect(
+    "📌 비교할 나라를 선택하세요 (2개)", 
+    df["Country"].sort_values(),
+    default=["Peru", "South Korea"]
 )
 
-# 그래프 꾸미기
-fig.update_traces(texttemplate="%{text:.2%}", textposition="outside")
-fig.update_layout(
-    xaxis_title="국가",
-    yaxis_title="INFP 비율",
-    title_x=0.5,
-    bargap=0.4,
-    plot_bgcolor="white"
-)
+# 선택한 나라만 필터링
+if len(countries) == 2:
+    subset = df[df["Country"].isin(countries)][["Country", "INFP"]]
 
-# 출력
-st.plotly_chart(fig, use_container_width=True)
+    # Plotly 막대 그래프
+    fig = px.bar(
+        subset,
+        x="Country",
+        y="INFP",
+        text="INFP",
+        color="Country",
+        color_discrete_sequence=px.colors.qualitative.Set2,
+        title=f"🌍 {countries[0]} vs {countries[1]} INFP 비율 비교"
+    )
+
+    # 그래프 꾸미기
+    fig.update_traces(texttemplate="%{text:.2%}", textposition="outside")
+    fig.update_layout(
+        xaxis_title="국가",
+        yaxis_title="INFP 비율",
+        title_x=0.5,
+        bargap=0.4,
+        plot_bgcolor="white"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+else:
+    st.info("⚠️ 나라를 정확히 2개 선택해주세요!")
